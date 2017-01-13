@@ -433,20 +433,6 @@ Login
   Click Button    id=add-auction-form-save
   Wait Until Page Contains  ${field_value}  30
 
-Отримати інформацію про items[0].quantity
-  ${return_value}=   Отримати текст із поля і показати на сторінці   items[0].quantity
-  ${return_value}=   Convert To Number   ${return_value}
-  [Return]  ${return_value}
-
-Отримати інформацію про items[0].unit.code
-  ${return_value}=   Отримати текст із поля і показати на сторінці   items[0].unit.code
-  ${return_value}=   Convert To String     ${return_value}
-  [Return]  ${return_value}
-
-Отримати інформацію про items[0].unit.name
-  ${return_value}=   Отримати текст із поля і показати на сторінці   items[0].unit.name
-  ${return_value}=   Convert To String     ${return_value}
-  [Return]   ${return_value}
 
 Отримати інформацію про value.currency
   ${return_value}=   Отримати текст із поля і показати на сторінці  value.currency
@@ -466,7 +452,6 @@ Login
 Отримати інформацію про procuringEntity.name
   ${return_value}=   Отримати текст із поля і показати на сторінці   procuringEntity.name
   [Return]  ${return_value}
-
 
 Отримати інформацію про tenderPeriod.startDate
   ${return_value}=    Отримати текст із поля і показати на сторінці  tenderPeriod.startDate
@@ -504,20 +489,23 @@ Login
   ${return_value}=   add_timezone_to_date   ${return_value.split('.')[0]}
   [Return]  ${return_value}
 
+Отримати інформацію про items[0].quantity
+  ${return_value}=   Отримати текст із поля і показати на сторінці   items[0].quantity
+  ${return_value}=   Convert To Number   ${return_value}
+  [Return]  ${return_value}
+
+Отримати інформацію про items[0].unit.code
+  ${return_value}=   Отримати текст із поля і показати на сторінці   items[0].unit.code
+  ${return_value}=   Convert To String     ${return_value}
+  [Return]  ${return_value}
+
+Отримати інформацію про items[0].unit.name
+  ${return_value}=   Отримати текст із поля і показати на сторінці   items[0].unit.name
+  ${return_value}=   Convert To String     ${return_value}
+  [Return]   ${return_value}
+
 Отримати інформацію про items[0].description
   ${return_value}=   Отримати текст із поля і показати на сторінці   items[0].description
-  [Return]  ${return_value}
-
-Отримати інформацію про items[1].description
-  ${return_value}=   Отримати текст із поля і показати на сторінці   items[1].description
-  [Return]  ${return_value}
-
-Отримати інформацію про items[2].description
-  ${return_value}=   Отримати текст із поля і показати на сторінці   items[2].description
-  [Return]  ${return_value}
-
-Отримати інформацію про items[3].description
-  ${return_value}=   Отримати текст із поля і показати на сторінці   items[3].description
   [Return]  ${return_value}
 
 Отримати інформацію про items[0].classification.id
