@@ -261,6 +261,10 @@ Login
 Завантажити протокол аукціону
     [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    :FOR    ${i}    IN RANGE    1   5
+    \    ${test}=   Wait Until Page Contains    Кваліфікація переможця  30
+    \    Exit For Loop If    ${test}
+    \    reload page
     Click Element           id=add_user_bid_docs
     Sleep   2
     Choose File             xpath=//input[contains(@id, 'bid_doc_upload_fieldauctionProtocol')]   ${filepath}
@@ -432,7 +436,6 @@ Login
   Input text  name=addauctionform-[${field_name}]  ${field_value}
   Click Button    id=add-auction-form-save
   Wait Until Page Contains  ${field_value}  30
-
 
 Отримати інформацію про value.currency
   ${return_value}=   Отримати текст із поля і показати на сторінці  value.currency
@@ -666,11 +669,7 @@ Login
     [Return]    ${resp}
 
 Скасувати цінову пропозицію
-    [Arguments]  @{ARGUMENTS}
-    [Documentation]
-    ...    ${ARGUMENTS[0]} ==  username
-    ...    ${ARGUMENTS[1]} ==  none
-    ...    ${ARGUMENTS[2]} ==  tenderId
+    [Arguments]  ${username}  ${tender_uaid}
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element       id=cansel-bid
 
@@ -755,13 +754,13 @@ Login
     [Return]   ${result}
 
 Підтвердити постачальника
-  [Documentation]
-  ...      [Arguments] Username, tender uaid and number of the award to confirm
-  ...      [Return] Nothing
-  [Arguments]  ${username}  ${tender_uaid}  ${award_num}
-  Wait Until Element Is Visible     id=cwalificate_winer_btn    15
-  Click Element     id=cwalificate_winer_btn
-  Wait Until Element Is Visible       id=signed_contract_btn   30
+    [Arguments]  ${username}  ${tender_uaid}  ${award_num}
+    :FOR    ${i}    IN RANGE    1   5
+    \    ${test}=   Wait Until Element Is Visible     id=cwalificate_winer_btn    30
+    \    Exit For Loop If    ${test}
+    \    reload page
+    Click Element     id=cwalificate_winer_btn
+    Wait Until Element Is Visible       id=signed_contract_btn   30
 
 Підтвердити підписання контракту
   [Documentation]
