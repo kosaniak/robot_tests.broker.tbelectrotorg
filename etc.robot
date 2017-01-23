@@ -691,7 +691,7 @@ Login
 
 Завантажити документ в ставку
     [Arguments]  ${username}  ${path}  ${tender_uaid}  ${doc_type}=documents
-    Sleep   30
+    Sleep   60
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element           id=edit_user_bid
     Sleep   2
