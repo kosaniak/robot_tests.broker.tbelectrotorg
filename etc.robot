@@ -660,9 +660,8 @@ Login
     [Arguments]  ${username}  ${tender_uaid}  ${bid}
     etc.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
     Click Element       id=add_bid_btn
-    Sleep   4
+    Wait Until Element Is Visible       id=addbidform-no_credit_relation   10
     Click Element       id=addbidform-no_credit_relation
-    Sleep   4
     Click Element       id=submit_add_bid_form
     Wait Until Page Contains  Ваша пропозиція  10
     [Return]    ${bid}
