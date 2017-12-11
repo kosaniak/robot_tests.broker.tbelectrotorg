@@ -31,7 +31,7 @@ def add_timezone_to_contact_date(date_str):
     timezone="+02:00"
     return date_str+timezone
 
-def polonex_download_file(url, file_name, output_dir):
+def etc_download_file(url, file_name, output_dir):
     urllib.urlretrieve(url, ('{}/{}'.format(output_dir, file_name)))
 
 def convert_etc_string(string):
