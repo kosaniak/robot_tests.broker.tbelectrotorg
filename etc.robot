@@ -18,6 +18,7 @@ ${locator.procurementMethodType}                     id=info_procurementMethodTy
 ${locator.eligibilityCriteria}                       id=eligibilityCriteria_marker
 ${locator.status}                                    id=auction_status_name
 ${locator.description}                               id=info_description
+${locator.minNumberOfQualifiedBids}                  id=info_minNumberOfQualifiedBids
 ${locator.minimalStep.amount}                        xpath=//td[contains(@id, 'info_minimalStep')]/span[contains(@class, 'amount')]
 ${locator.value.amount}                              xpath=//td[contains(@id, 'info_value')]/span[contains(@class, 'amount')]
 ${locator.guarantee.amount}                          xpath=//td[contains(@id, 'info_guarantee')]/span[contains(@class, 'amount')]
@@ -422,6 +423,12 @@ Login
   ${return_value}=   Отримати текст із поля і показати на сторінці   eligibilityCriteria
   [Return]  ${return_value}
 
+Отримати інформацію про minNumberOfQualifiedBids
+  ${return_value}=   Отримати текст із поля і показати на сторінці   minNumberOfQualifiedBids
+  ${return_value}=   Convert To Number   ${return_value}
+  [Return]  ${return_value}
+
+
 Отримати інформацію про status
   reload page
   ${return_value}=   Отримати текст із поля і показати на сторінці   status
@@ -685,7 +692,6 @@ Login
     Click Button                        id=submit_add_answer_form
     Wait Until Page Contains   ${answer_data.data.answer}   10
 
-
 Подати цінову пропозицію
     [Arguments]  @{ARGUMENTS}
     [Documentation]
@@ -836,8 +842,6 @@ Login
   Click Element           id=cansel_auction_btn
   sleep  2
   Input text        xpath=//textarea[@id="canselform-reason"]       ${cancellation_reason}
-  Click Element     id=cansel_doc_upload_field
-  sleep  2
   Choose File       id=cansel_doc_upload_field                      ${document}
   Wait Until Element Is Visible       xpath=//div[contains(@class, 'ho_upload_item_wrap')]   30
   sleep  4
