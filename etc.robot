@@ -89,10 +89,10 @@ ${assetlocator.assetHolder.identifier.legalName}         xpath=//span[contains(@
 ${assetlocator.assetHolder.contactPoint.name}            xpath=//div[contains(@class, 'assetHolder_contactPoint_name')]
 ${assetlocator.assetHolder.contactPoint.telephone}       xpath=//div[contains(@class, 'assetHolder_contactPoint_telephone')]
 ${assetlocator.assetHolder.contactPoint.email}           xpath=//div[contains(@class, 'assetHolder_contactPoint_email')]
-${assetlocator.assetCustodian.name}                      id=assetCustodian_name_fortest
+${assetlocator.assetCustodian.name}                      id=assetCustodian_name
 ${assetlocator.assetCustodian.identifier.scheme}         xpath=//span[contains(@class, 'assetCustodian_org_ident_scheme')]
 ${assetlocator.assetCustodian.identifier.id}             xpath=//span[contains(@class, 'assetCustodian_org_ident_id')]
-${assetlocator.assetCustodian.identifier.legalName}      xpath=//td[contains(@id, 'assetCustodian_name')]
+${assetlocator.assetCustodian.identifier.legalName}      id=assetCustodian_name
 ${assetlocator.assetCustodian.contactPoint.name}         xpath=//div[contains(@class, 'assetCustodian_contactPoint_name')]
 ${assetlocator.assetCustodian.contactPoint.telephone}    xpath=//div[contains(@class, 'assetCustodian_contactPoint_telephone')]
 ${assetlocator.assetCustodian.contactPoint.email}        xpath=//div[contains(@class, 'assetCustodian_contactPoint_email')]
@@ -769,6 +769,8 @@ Login
 
 Отримати документ
     [Arguments]  ${username}  ${tender_uaid}  ${doc_id}
+    sleep  60
+    reload page
     ${file_name}=   Get Text   xpath=//div[contains(text(),'${doc_id}')]
     ${url}=   Get Element Attribute   xpath=//div[contains(@data-name,'${file_name}')]@data-src
     etc_download_file   ${url}  ${file_name}  ${OUTPUT_DIR}
@@ -875,7 +877,7 @@ Login
 
 Завантажити документ в ставку
     [Arguments]  ${username}  ${path}  ${tender_uaid}  ${doc_type}=documents
-    Sleep   60
+    Sleep   20
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element           id=edit_user_bid
     Sleep   2
@@ -1184,7 +1186,11 @@ Login
     [Documentation]
     ...      [Призначення] Шукає об’єкт МП з uaid = tender_uaid.
     ...      [Повертає] tender (словник з інформацією про об’єкт МП)
+    Switch Browser   ${BROWSER_ALIAS}
+    Go to    ${TESTDOMAIN}/prozorrosale2/auctions/get-all-assets?n=10
+    Sleep   10
     Go to    ${TESTDOMAIN}/prozorrosale2/auctions/assets
+    Wait Until Element Is Visible      id=registr2assetssearch-all    10
     Input text      id=registr2assetssearch-all       ${tender_uaid}
     Click Element   id=assets-search-btn
     Sleep   5
@@ -1195,8 +1201,6 @@ Login
     [Arguments]  ${username}  ${tender_uaid}
     [Documentation]
     ...      [Призначення] Оновлює сторінку з об’єктом МП для отримання потенційно оновлених даних.
-    Go to    ${TESTDOMAIN}/prozorrosale2/auctions/get-all-assets?n=10
-    Sleep   10
     etc.Пошук об’єкта МП по ідентифікатору  ${username}  ${tender_uaid}
 
 Отримати інформацію із об'єкта МП
@@ -1204,6 +1208,9 @@ Login
     [Documentation]
     ...      [Призначення] Отримує значення поля field_name для об’єкту МП tender_uaid.
     ...      [Повертає] tender['field_name'] (значення поля).
+    etc.Пошук об’єкта МП по ідентифікатору  ${username}  ${tender_uaid}
+    Run Keyword If
+    ...    'documentType' not in '${fieldname}'  etc.wait with reload    assetlocator   ${fieldname}
     ${return_value}=   Get Text  ${assetlocator.${fieldname}}
 
     ${return_value}=  Run Keyword If
@@ -1372,7 +1379,7 @@ Login
     ...      [Призначення] Видаляє об’єкт МП tender_uaid користувачем username.
     etc.Пошук об’єкта МП по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  id=delete_asset_btn
-    Wait Until Page Contains    Видалено з реєстру актив  20
+    Wait Until Page Contains    Видалено з реєстру  20
 
 
 ######################### Лоти #########################
@@ -1419,7 +1426,11 @@ Login
     [Documentation]
     ...      [Призначення] Шукає лот з uaid = tender_uaid.
     ...      [Повертає] tender (словник з інформацією про лот)
+    Switch Browser   ${BROWSER_ALIAS}
+    Go to    ${TESTDOMAIN}/prozorrosale2/auctions/get-all-lots?n=10
+    Sleep   10
     Go to    ${TESTDOMAIN}/prozorrosale2/auctions/lots
+    Wait Until Element Is Visible       id=registr2lotssearch-all   30
     Input text      id=registr2lotssearch-all       ${tender_uaid}
     Click Element   id=lots-search-btn
     Sleep   5
@@ -1430,17 +1441,17 @@ Login
     [Arguments]  ${username}  ${tender_uaid}
     [Documentation]
     ...      [Призначення] Оновлює сторінку з лотом для отримання потенційно оновлених даних.
-    Go to    ${TESTDOMAIN}/prozorrosale2/auctions/get-all-lots?n=10
-    Sleep   10
     etc.Пошук лоту по ідентифікатору  ${username}  ${tender_uaid}
 
 Отримати інформацію із лоту
-    [Arguments]  ${username}  ${tender_uaid}  ${field_name}
+    [Arguments]  ${username}  ${tender_uaid}  ${fieldname}
     [Documentation]
     ...      [Призначення] Отримує значення поля field_name для лоту tender_uaid.
     ...      [Повертає] tender['field_name'] (значення поля).
-
+    etc.Пошук лоту по ідентифікатору  ${username}  ${tender_uaid}
+    etc.wait with reload  lotlocator  ${fieldname}
     ${return_value}=   Get Text  ${lotlocator.${fieldname}}
+
 
     ${return_value}=  Run Keyword If
     ...  'status' in '${fieldname}'                                   convert_etc_lot_string  ${return_value}
@@ -1459,7 +1470,7 @@ Login
     [Return]  ${return_value}
 
 Отримати інформацію з активу лоту
-    [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${field_name}
+    [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${fieldname}
     [Documentation]
     ...      [Призначення] Отримує значення поля field_name з активу з item_id в описі лоту tender_uaid.
     ...      [Повертає] item['field_name'] (значення поля).
@@ -1537,7 +1548,9 @@ Login
     Choose File     id=doc_upload_field_${documentType}   ${filepath}
     Sleep   10
     Click Element  id=save_lot
-
+    Wait Until Element Is Visible    id=docuploadsuccess  120
+    Click Element  id=docuploadsuccess
+    Wait Until Element Is Visible      id=info_status    30
 
 Завантажити документ для видалення лоту
     [Arguments]  ${username}  ${tender_uaid}  ${filepath}
@@ -1557,7 +1570,7 @@ Login
     ...      [Призначення] Видаляє лот tender_uaid користувачем username.
     etc.Пошук лоту по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  id=delete_lot_btn
-    Wait Until Page Contains    Видалено з реєстру лот  20
+    Wait Until Page Contains    Видалено з реєстру  20
 
 Додати умови проведення аукціону
     [Arguments]  ${username}  ${auction}  ${auction_index}  ${tender_uaid}
@@ -1596,13 +1609,12 @@ Login
 
 Додати умови проведення аукціону для індексу 1
     [Arguments]  ${username}  ${auction}  ${auction_index}  ${tender_uaid}
-    ${w}=      Get From Dictionary     ${auction}    tenderingDuration
     Input text    addlotauctionform-1-tenderingduration_y    ${EMPTY}
     Input text    addlotauctionform-1-tenderingduration_m    ${EMPTY}
     Input text    addlotauctionform-1-tenderingduration_w    1
     Input text    addlotauctionform-1-tenderingduration_d    ${EMPTY}
     Click Element  id=publish_lot
-    Wait Until Element Is Visible      id=info_status    60
+    Wait Until Element Is Visible      id=info_status    30
 
 Додати умови проведення аукціону для індексу 2
     [Arguments]  ${username}  ${auction}  ${auction_index}  ${tender_uaid}
@@ -1622,7 +1634,7 @@ Login
     Wait Until Element Is Visible       name=AddLotAuctionForm[${auction_index}][${prop_field_name}]   30
 
     ${fieldvalue}=  Run keyword if
-    ...  'auctionPeriod_startDate' in '${fieldname}'    etc_convertdate  ${fieldname}
+    ...  'startDate' in '${fieldname}'    etc_convertdate  ${fieldvalue}
     ...  ELSE    Convert to string   ${fieldvalue}
 
     Input text  name=AddLotAuctionForm[${auction_index}][${prop_field_name}]  ${fieldvalue}
@@ -1642,5 +1654,15 @@ Login
     Choose File     xpath=//input[contains(@id, 'lot_auctions_doc_upload_field_${auction_index}_${documentType}')]   ${filepath}
     Sleep   10
     Click Element  id=save_lot
+    Wait Until Element Is Visible    id=docuploadsuccess  120
+    Click Element  id=docuploadsuccess
+    Wait Until Element Is Visible      id=info_status    30
+
+wait with reload
+    [Arguments]  ${locator}  ${fieldname}
+    :FOR    ${i}    IN RANGE    1   5
+    \    ${test}=    Run Keyword And Return Status    Wait Until Element Is Visible    ${${locator}.${fieldname}}    60
+    \    Exit For Loop If    ${test}
+    \    reload page
 
 
