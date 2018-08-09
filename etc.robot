@@ -390,14 +390,6 @@ Login
     ${contractperiod_enddate}=        etc_convertdate     ${item.contractPeriod.endDate}
     Input text      id=additemform-${index}-contractperiod_enddate   ${contractperiod_enddate}
 
-Додати предмет закупівлі
-    [Arguments]  ${username}  ${tender_uaid}  ${item}
-    Click Element   xpath=//a[contains(@id, "update_auction_btn")]
-
-Видалити предмет закупівлі
-    [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${lot_id}=${Empty}
-    Click Element   xpath=//a[contains(@id, "update_auction_btn")]
-
 Завантажити документ
     [Arguments]  ${username}  ${filepath}  ${tender_uaid}
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
