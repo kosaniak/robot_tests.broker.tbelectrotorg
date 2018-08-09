@@ -259,175 +259,12 @@ Login
   [Arguments]  ${username}  ${tender_data}  ${role_name}
   [return]  ${tender_data}
 
-Створити тендер
-  [Arguments]  @{ARGUMENTS}
-  [Documentation]
-  ...      ${ARGUMENTS[0]} ==  username
-  ...      ${ARGUMENTS[1]} ==  tender_data
-
-    ${procurementmethodtype}=                Get From Dictionary         ${ARGUMENTS[1].data}                   procurementMethodType
-    ${title}=                                Get From Dictionary         ${ARGUMENTS[1].data}                   title
-    ${dgfID}=                                Get From Dictionary         ${ARGUMENTS[1].data}                   dgfID
-
-    ${minNumberOfQualifiedBids}=             Get From Dictionary         ${ARGUMENTS[1].data}                   minNumberOfQualifiedBids
-
-    ${tenderAttempts}=                       Get From Dictionary         ${ARGUMENTS[1].data}                   tenderAttempts
-    ${description}=                          Get From Dictionary         ${ARGUMENTS[1].data}                   description
-    ${auctionperiod_startdate}=              Get From Dictionary         ${ARGUMENTS[1].data.auctionPeriod}     startDate
-    ${minimalstep_amount}=                   Get From Dictionary         ${ARGUMENTS[1].data.minimalStep}       amount
-    ${minimalstep_currency}=                 Get From Dictionary         ${ARGUMENTS[1].data.minimalStep}       currency
-    ${value_amount}=                         Get From Dictionary         ${ARGUMENTS[1].data.value}             amount
-    ${value_currency}=                       Get From Dictionary         ${ARGUMENTS[1].data.value}             currency
-    ${value_valueaddedtaxincluded}=          Convert To String           ${ARGUMENTS[1].data.value.valueAddedTaxIncluded}
-    ${value_valueaddedtaxincluded}=          convert_etc_string          ${value_valueaddedtaxincluded}
-
-
-    ${guarantee_amount}=                     Get From Dictionary         ${ARGUMENTS[1].data.guarantee}         amount
-
-    ${items}=                                Get From Dictionary         ${ARGUMENTS[1].data}                   items
-    ${item0}=                                Get From List               ${items}                               0
-    ${item_description}=                     Get From Dictionary         ${item0}                               description
-    ${classification_scheme}=                Get From Dictionary         ${item0.classification}                scheme
-    ${classification_description}=           Get From Dictionary         ${item0.classification}                description
-    ${classification_id}=                    Get From Dictionary         ${item0.classification}                id
-    ${deliveryaddress_postalcode}=           Get From Dictionary         ${item0.deliveryAddress}               postalCode
-    ${deliveryaddress_countryname}=          Get From Dictionary         ${item0.deliveryAddress}               countryName
-    ${deliveryaddress_streetaddress}=        Get From Dictionary         ${item0.deliveryAddress}               streetAddress
-    ${deliveryaddress_region}=               Get From Dictionary         ${item0.deliveryAddress}               region
-    ${deliveryaddress_locality}=             Get From Dictionary         ${item0.deliveryAddress}               locality
-    ${unit_code}=                            Get From Dictionary         ${item0.unit}                          code
-    ${unit_name}=                            Get From Dictionary         ${item0.unit}                          name
-    ${quantity}=                             Get From Dictionary         ${item0}                               quantity
-    ${deliverylocation_latitude}=            Get From Dictionary         ${item0.deliveryLocation}              latitude
-    ${deliverylocation_longitude}=           Get From Dictionary         ${item0.deliveryLocation}              longitude
-
-
-    ${procuringEntity}=                      Get From Dictionary         ${ARGUMENTS[1].data}                   procuringEntity
-
-    ${procuringEntity_address_countryName}=      Get From Dictionary     ${procuringEntity.address}            countryName
-    ${procuringEntity_address_locality}=         Get From Dictionary     ${procuringEntity.address}            locality
-    ${procuringEntity_address_postalCode}=       Get From Dictionary     ${procuringEntity.address}            postalCode
-    ${procuringEntity_address_region}=           Get From Dictionary     ${procuringEntity.address}            region
-    ${procuringEntity_address_streetAddress}=    Get From Dictionary     ${procuringEntity.address}            streetAddress
-    ${procuringEntity_contactPoint_name}=        Get From Dictionary     ${procuringEntity.contactPoint}       name
-    ${procuringEntity_contactPoint_telephone}=   Get From Dictionary     ${procuringEntity.contactPoint}       telephone
-    ${procuringEntity_identifier_id}=            Get From Dictionary     ${procuringEntity.identifier}         id
-    ${procuringEntity_identifier_scheme}=        Get From Dictionary     ${procuringEntity.identifier}         scheme
-    ${procuringEntity_name}=                     Get From Dictionary     ${procuringEntity}                    name
-
-    ${minimalstep_amount}=              Convert To String     ${minimalstep_amount}
-    ${value_amount}=                    Convert To String     ${value_amount}
-    ${guarantee_amount}=                Convert To String     ${guarantee_amount}
-    ${deliverylocation_latitude}=       Convert To String     ${deliverylocation_latitude}
-    ${deliverylocation_longitude}=      Convert To String     ${deliverylocation_longitude}
-    ${tenderAttempts}=                  Convert To String     ${tenderAttempts}
-
-    ${auctionperiod_startdate}=        etc_convertdate   ${auctionperiod_startdate}
-
-    Go to   ${USERS.users['${ARGUMENTS[0]}'].homepage}/../../../prozorrosale/user/profile
-    Sleep   2
-    Input text      id=user-firm_phone                      ${procuringEntity_contactPoint_telephone}
-    Input text      id=user-edrpoy                          ${procuringEntity_identifier_id}
-    Input text      id=user-firm_name                       ${procuringEntity_name}
-    Click Element       id=profile_save_btn
-    Wait Until Page Contains    Інформацію успішно збережено!  10
-
-    Go to   ${USERS.users['${ARGUMENTS[0]}'].homepage}
-    Sleep   2
-    Click Element   ${prozorropage}
-    Sleep   2
-    Click Element       xpath=//a[contains(@id, 'addauctionbtn')]
-    Sleep   2
-    Click Element   id=createtrade
-    Sleep   4
-
-
-    Select From List    xpath=//select[@id="addauctionform-procurementmethodtype"]                ${procurementmethodtype}
-    Select From List    xpath=//select[@id="addauctionform-tenderattempts"]                       ${tenderAttempts}
-    Select From List    xpath=//select[@id="addauctionform-minimalstep_valueaddedtaxincluded"]    ${value_valueaddedtaxincluded}
-    Select From List    xpath=//select[@id="addauctionform-value_valueaddedtaxincluded"]          ${value_valueaddedtaxincluded}
-    Input text      id=addauctionform-title                                                       ${title}
-    Input text      id=addauctionform-dgfid                                                       ${dgfID}
-
-    Input text      id=addauctionform-minnumberofqualifiedbids                                    ${minNumberOfQualifiedBids}
-
-    Input text      id=addauctionform-description                                                 ${description}
-    Input text      id=addauctionform-auctionperiod_startdate                                     ${auctionperiod_startdate}
-    Input text      id=addauctionform-minimalstep_amount                                          ${minimalstep_amount}
-    Input text      id=addauctionform-value_amount                                                ${value_amount}
-
-    Input text      id=addauctionform-guarantee_amount                                            ${guarantee_amount}
-
-    etc.Додати предмети      ${items}
-    Sleep   5
-    Click Element   xpath=//button[contains(@id, 'add-auction-form-save')]
-    Wait Until Element Is Visible       xpath=//td[contains(@id, 'info_auctionID')]   30
-
-    ${tender_uaid}=     Get Text        xpath=//td[contains(@id, 'info_auctionID')]
-    [Return]    ${tender_uaid}
-
-Додати предмети
-    [Arguments]  ${items}
-    ${Items_length}=   Get Length   ${items}
-    :FOR   ${index}   IN RANGE   ${Items_length}
-    \   etc.Додати предмет   ${items[${index}]}     ${index}
-
-Додати предмет
-    [Arguments]  ${item}  ${index}
-    ${index}=  Convert To Integer  ${index}
-    Run Keyword If  ${index} != 0   Click Element   id=additem
-    Run Keyword If  ${index} != 0   Sleep           4
-    Select From List    xpath=//select[@id="additemform-${index}-unit_code"]         ${item.unit.code}
-    Input text      id=additemform-${index}-description                              ${item.description}
-    ${quantity}=  Convert To String  ${item.quantity}
-    Input text      id=additemform-${index}-quantity                                 ${quantity}
-    Run Keyword If
-    ...  '${item.classification.scheme}' == 'CAV-PS'  Execute Javascript    $("#additemform-${index}-classification_id").val("${item.classification.id}"); $("#additemform-${index}-classification_id").trigger("change");
-    ...  ELSE       Execute Javascript    $("#additemform-${index}-classification_id_cpv").val("${item.classification.id}"); $("#additemform-${index}-classification_id_cpv").trigger("change");
-    Execute Javascript    $("#additemform-${index}-additionalclassifications_id").val("${item.additionalClassifications[0].id}"); $("#additemform-${index}-additionalclassifications_id").trigger("change");
-    ${contractperiod_startdate}=        etc_convertdate     ${item.contractPeriod.startDate}
-    Input text      id=additemform-${index}-contractperiod_startdate   ${contractperiod_startdate}
-    ${contractperiod_enddate}=        etc_convertdate     ${item.contractPeriod.endDate}
-    Input text      id=additemform-${index}-contractperiod_enddate   ${contractperiod_enddate}
-
 Завантажити документ
     [Arguments]  ${username}  ${filepath}  ${tender_uaid}
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element     id=update_auction_btn
     Sleep   2
     Choose File     xpath=//input[contains(@id, "doc_upload_field_biddingDocuments")]   ${filepath}
-
-Завантажити ілюстрацію
-    [Arguments]  ${username}  ${tender_uaid}  ${filepath}
-    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-    Click Element     id=update_auction_btn
-    Sleep   2
-    Choose File       id=doc_upload_field_illustration        ${filepath}
-
-Додати Virtual Data Room
-    [Arguments]  ${username}  ${tender_uaid}  ${vdr_url}  ${title}=Sample Virtual Data Room
-    Wait Until Element Is Visible       xpath=//div[contains(@id,'doc_upload_wrap_virtualDataRoom')]/div/div[contains(@class,'ho_upload_link_btn')]      30
-    Click Element   xpath=//div[contains(@id,'doc_upload_wrap_virtualDataRoom')]/div/div[contains(@class,'ho_upload_link_btn')]
-    Sleep   4
-    Input Text      jquery=#doc_upload_wrap_virtualDataRoom input#input_link   ${vdr_url}
-    Click Element    jquery=#doc_upload_wrap_virtualDataRoom a.linkadd_submit
-    Wait Until Element Is Visible       jquery=#doc_upload_wrap_virtualDataRoom div.ho_upload_item      30
-
-Додати публічний паспорт активу
-    [Arguments]  ${username}  ${tender_uaid}  ${certificate_url}
-    Wait Until Element Is Visible       xpath=//div[contains(@id,'doc_upload_wrap_x_dgfPublicAssetCertificate')]/div/div[contains(@class,'ho_upload_link_btn')]      30
-    Click Element   xpath=//div[contains(@id,'doc_upload_wrap_x_dgfPublicAssetCertificate')]/div/div[contains(@class,'ho_upload_link_btn')]
-    Sleep   4
-    Input Text      jquery=#doc_upload_wrap_x_dgfPublicAssetCertificate input#input_link   ${certificate_url}
-    Click Element    jquery=#doc_upload_wrap_x_dgfPublicAssetCertificate a.linkadd_submit
-
-Завантажити документ в тендер з типом
-    [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${documentType}
-    Choose File       id=doc_upload_field_${documentType}        ${filepath}
-
-Додати офлайн документ
-    [Arguments]  ${username}  ${tender_uaid}  ${accessDetails}
-    Click Button    id=add-auction-form-save
 
 Завантажити протокол аукціону
     [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
@@ -591,7 +428,6 @@ Login
   ${return_value}=   Convert To Number   ${return_value}
   [Return]  ${return_value}
 
-
 Отримати інформацію про status
   reload page
   ${return_value}=   Отримати текст із поля і показати на сторінці   status
@@ -626,17 +462,6 @@ Login
   ${return_value}=   Отримати текст із поля і показати на сторінці  registrationFee.amount
   ${return_value}=   Convert To Number   ${return_value}
   [Return]  ${return_value}
-
-Внести зміни в тендер
-  [Arguments]  ${username}  ${tender_uaid}  ${field_name}  ${field_value}
-  etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  ${prop_field_name}=         Replace String    ${field_name}    .   _    count=1
-  Click Element     id=update_auction_btn
-  Wait Until Element Is Visible       name=AddAuctionForm[${prop_field_name}]   30
-  ${field_value}=  Convert To String  ${field_value}
-  Input text  name=AddAuctionForm[${prop_field_name}]  ${field_value}
-  Click Button    id=add-auction-form-save
-  Wait Until Page Contains  ${field_value}  30
 
 Отримати інформацію про value.currency
   ${return_value}=   Отримати текст із поля і показати на сторінці  value.currency
@@ -692,7 +517,6 @@ Login
   ${return_value}=   convert_etc_date_to_iso_format   ${return_value}
   ${return_value}=   add_timezone_to_date   ${return_value.split('.')[0]}
   [Return]  ${return_value}
-
 
 Отримати інформацію про items[0].contractPeriod.startDate
   ${return_value}=   Отримати текст із поля і показати на сторінці  items[0].contractPeriod
@@ -882,7 +706,6 @@ Login
     ${resp}=    Get Text      id=userbidamount
     [Return]    ${resp}
 
-
 Скасувати цінову пропозицію
     [Arguments]  ${username}  ${tender_uaid}
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
@@ -989,7 +812,6 @@ Login
     Input Text  xpath=//input[contains(@id,"addsignform-contractnumber")]  ${contract_num}
     Click Button     id=submit_sign_contract
     Wait Until Page Contains  Договір підписано успішно  10
-
 
 Скасувати закупівлю
   [Documentation]
