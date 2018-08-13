@@ -656,21 +656,6 @@ Login
     ${doc_value}=   Get Element Attribute   xpath=//p[contains(@id,"bid_files_auctionProtocol")]@data-key
     [return]  ${doc_value}
 
-Скасування рішення кваліфікаційної комісії
-    [Arguments]  ${username}  ${tender_uaid}  ${award_num}
-    etc.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
-    Click Element                         xpath=//a[contains(@id, "refuse_btn")]
-    Wait Until Page Contains   Ви успішно відмовились від участі в кваліфікації переможців   10
-
-Дискваліфікувати постачальника
-    [Arguments]  ${username}  ${tender_uaid}  ${award_num}  ${description}
-    etc.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
-    Click Element              xpath=//a[contains(@id, 'discwalificate_winer_btn_${award_num}')]
-    Sleep   4
-    Execute Javascript          $('textarea#adddisqualifyform-description_${award_num}').value = '${description}';
-    Execute Javascript          $('#submit_bid_disqualify_form_${award_num}').click();
-    Wait Until Page Contains   Учасника дискваліфіковано   30
-
 Відповісти на запитання
     [Arguments]  ${username}  ${tender_uaid}  ${answer_data}  ${question_id}
     ${index}=   Get Element Attribute   xpath=//div[contains(text(), '${question_id}')]@id
@@ -793,26 +778,6 @@ Login
     ${result}=                  Get Element Attribute               id=show_private_btn@href
     [Return]   ${result}
 
-Підтвердити постачальника
-    [Arguments]  ${username}  ${tender_uaid}  ${award_num}
-    :FOR    ${i}    IN RANGE    1   5
-    \    ${test}=   Wait Until Element Is Visible     id=cwalificate_winer_btn    30
-    \    Exit For Loop If    ${test}
-    \    reload page
-    Click Element     id=cwalificate_winer_btn
-    Wait Until Element Is Visible       id=signed_contract_btn   30
-
-Підтвердити підписання контракту
-    [Documentation]
-    ...      [Arguments] Username, tender uaid, contract number
-    ...      [Return] Nothing
-    [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
-    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-    Click Element     id=signed_contract_btn
-    Input Text  xpath=//input[contains(@id,"addsignform-contractnumber")]  ${contract_num}
-    Click Button     id=submit_sign_contract
-    Wait Until Page Contains  Договір підписано успішно  10
-
 Скасувати закупівлю
   [Documentation]
   ...      [Arguments] Username, tender uaid, cancellation reason,
@@ -837,13 +802,6 @@ Login
   sleep  2
   Click Element           id=submit_cansel_form
 
-Завантажити протокол аукціону в авард
-    [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
-    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-    Click Element           id=upload_owner_protocol_and_contract
-    sleep  4
-    Choose File             xpath=//input[contains(@id, "award_doc_upload_field_auctionProtocol")]   ${filepath}
-
 Підтвердити наявність протоколу аукціону
     [Arguments]  ${username}  ${tender_uaid}  ${award_index}
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
@@ -854,7 +812,6 @@ Login
     sleep  120
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Wait Until Page Contains  [Очікується оплата]  20
-
 
 ######################### Активи #########################
 
@@ -1509,3 +1466,130 @@ wait with reload
     Go to    ${TESTDOMAIN}/prozorrosale2/auctions/get-all?n=15
     Sleep   15
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+
+
+######################### Кваліфікація #########################
+
+
+Отримати кількість авардів в тендері
+    [Arguments]  ${username}  ${tender_uaid}
+    [Documentation]
+    ...  [Призначення] Отримує кількість сформованих авардів аукціону tender_uaid.
+    ...  [Повертає] number_of_awards (кількість сформованих авардів).
+    ${return_value}=   Get Text     id=awards_count
+    [Return]  ${return_value}
+
+Завантажити протокол погодження в авард
+    [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
+    [Documentation]
+    ...  [Призначення] Завантажує протокол аукціону, який знаходиться по шляху filepath і має documentType = admissionProtocol, до ставки кандидата на кваліфікацію аукціону tender_uaid користувачем username. Ставка, до якої потрібно додавати протокол визначається за award_index.
+    ...  [Повертає] reply (словник з інформацією про документ).
+    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Wait Until Element Is Visible  id=winner_admission  30
+    Click Element           id=winner_admission
+    Sleep   2
+    Choose File             xpath=//input[contains(@id, 'admissionProtocol_upload_field')]   ${filepath}
+    Click Button           xpath=//button[contains(@id,'submit_admission_form')]
+    Wait Until Page Contains  Опублікувано рішення про викуп  15
+
+Активувати кваліфікацію учасника
+    [Arguments]  ${username}  ${tender_uaid}
+    [Documentation]
+    ...  [Призначення] Переводить кандидата аукціону tender_uaid в статус pending під час admissionPeriod.
+    ...  [Повертає] reply (словник з інформацією про кандидата).
+    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    reload page
+    Capture Page Screenshot
+
+Завантажити протокол аукціону в авард
+    [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
+    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Click Element           id=upload_owner_protocol_and_contract
+    sleep  4
+    Choose File             xpath=//input[contains(@id, "award_doc_upload_field_auctionProtocol")]   ${filepath}
+
+Підтвердити постачальника
+    [Arguments]  ${username}  ${tender_uaid}  ${award_num}
+    :FOR    ${i}    IN RANGE    1   5
+    \    ${test}=   Wait Until Element Is Visible     id=cwalificate_winer_btn    30
+    \    Exit For Loop If    ${test}
+    \    reload page
+    Click Element     id=cwalificate_winer_btn
+    Wait Until Element Is Visible       id=signed_contract_btn   30
+
+Завантажити протокол дискваліфікації в авард
+    [Arguments]  ${username}   ${filepath}   ${tender_uaid}   ${award_index}
+    [Documentation]
+    ...  [Призначення] Завантажує протокол дискваліфікації, який знаходиться по шляху filepath і має documentType = act/rejectionProtocol, до ставки кандидата на кваліфікацію аукціону tender_uaid користувачем username. Ставка, до якої потрібно додавати протокол визначається за award_index.
+    ...  [Повертає] reply (словник з інформацією про документ).
+    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Wait Until Element Is Visible  id=rejectionProtocol_upload  30
+    Click Element           id=rejectionProtocol_upload
+    Sleep   2
+    Choose File            xpath=//input[contains(@id, 'rejectionProtocol_upload_field')]   ${filepath}
+    Click Button           xpath=//button[contains(@id,'rejectionProtocol_upload_submit')]
+    Wait Until Page Contains  Рішення про відмову у затвердженні протоколу опубліковано  15
+
+Дискваліфікувати постачальника
+    [Arguments]  ${username}  ${tender_uaid}  ${award_num}  ${description}
+    etc.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
+    Click Element              xpath=//a[contains(@id, 'discwalificate_winer_btn_${award_num}')]
+    Sleep   4
+    Execute Javascript          $('textarea#adddisqualifyform-description_${award_num}').value = '${description}';
+    Execute Javascript          $('#submit_bid_disqualify_form_${award_num}').click();
+    Wait Until Page Contains   Учасника дискваліфіковано   30
+
+Скасування рішення кваліфікаційної комісії
+    [Arguments]  ${username}  ${tender_uaid}  ${award_num}
+    etc.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
+    Click Element                         xpath=//a[contains(@id, "refuse_btn")]
+    Wait Until Page Contains   Ви успішно відмовились від участі в кваліфікації переможців   10
+
+Завантажити протокол скасування в контракт
+    [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${contract_num}
+    [Documentation]
+    ...  [Призначення] Завантажує до контракту contract_num аукціону tender_uaid документ, який знаходиться по шляху filepath і має documentType = act/rejectionProtocol, користувачем username.
+    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Wait Until Element Is Visible  id=contract_rejectionProtocol_upload  30
+    Click Element           id=contract_rejectionProtocol_upload
+    Sleep   2
+    Choose File            xpath=//input[contains(@id, 'contract_rejectionProtocol_upload_field')]   ${filepath}
+    Click Button           xpath=//button[contains(@id,'contract_rejectionProtocol_upload_submit')]
+    Wait Until Page Contains  Рішення про скасування контракту опубліковано  15
+
+Скасувати контракт
+    [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
+    [Documentation]
+    ...  [Призначення] Переводить договір під номером contract_num до аукціону tender_uaid в статус cancelled.
+    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    reload page
+    Capture Page Screenshot
+
+Встановити дату підписання угоди
+    [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${fieldvalue}
+    [Documentation]
+    ...  [Призначення] Встановлює в договорі під номером contract_num аукціону tender_uaid дату підписання контракту зі значенням fieldvalue.
+    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    log to console  ${contract_num}
+    Capture Page Screenshot
+
+Завантажити угоду до тендера
+    [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${filepath}
+    [Documentation]
+    ...  [Призначення] Завантажує до контракту contract_num аукціону tender_uaid документ, який знаходиться по шляху filepath і має documentType = contractSigned, користувачем username.
+    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    log to console  ${contract_num}
+    Capture Page Screenshot
+
+Підтвердити підписання контракту
+    [Documentation]
+    ...      [Arguments] Username, tender uaid, contract number
+    ...      [Return] Nothing
+    [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
+    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Click Element     id=signed_contract_btn
+    Input Text  xpath=//input[contains(@id,"addsignform-contractnumber")]  ${contract_num}
+    Click Button     id=submit_sign_contract
+    Wait Until Page Contains  Договір підписано успішно  10
+
+

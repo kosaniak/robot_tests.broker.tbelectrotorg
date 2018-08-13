@@ -76,6 +76,7 @@ def convert_etc_string(string):
             u'Повідомлення не валідне':                               'pending.deleted',
             u'Аукціон заплановано':                                   'scheduled',
             u'Мала приватизація':                                     'sellout.english',
+            u'[Очікування рішення про викуп]':                        'pending.admission',
             }
     return data.get(string, string)
 
