@@ -1488,6 +1488,7 @@ wait with reload
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
     Wait Until Element Is Visible  id=winner_admission  30
+    Sleep   10
     Click Element           id=winner_admission
     Sleep   2
     Choose File             xpath=//input[contains(@id, 'admissionProtocol_upload_field')]   ${filepath}
@@ -1506,9 +1507,12 @@ wait with reload
     [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
+    sleep  15
     Click Element           id=upload_owner_protocol_and_contract
     sleep  4
     Choose File             xpath=//input[contains(@id, "award_doc_upload_field_auctionProtocol")]   ${filepath}
+    Click Element           id=submit_owner_add_protocol
+    Wait Until Page Contains  Протокол завантажено успішно  15
 
 Підтвердити постачальника
     [Arguments]  ${username}  ${tender_uaid}  ${award_num}
@@ -1518,7 +1522,8 @@ wait with reload
     \    Exit For Loop If    ${test}
     \    reload page
     Click Element     id=cwalificate_winer_btn
-    Wait Until Element Is Visible       id=signed_contract_btn   30
+    Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
+    Wait Until Page Contains  Оплачено, очікується підписання договору  15
 
 Завантажити протокол дискваліфікації в авард
     [Arguments]  ${username}   ${filepath}   ${tender_uaid}   ${award_index}
@@ -1566,16 +1571,6 @@ wait with reload
     ### Операція зміни статусу та завантаження виконується в одну дію в попередньому кейворді
     No Operation
 
-Встановити дату підписання угоди
-    [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${fieldvalue}
-    [Documentation]
-    ...  [Призначення] Встановлює в договорі під номером contract_num аукціону tender_uaid дату підписання контракту зі значенням fieldvalue.
-    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-    Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
-    Click Element     id=signed_contract_btn
-    Input Text  xpath=//input[contains(@id,"addsignform-datesigned")]  ${fieldvalue}
-    Input Text  xpath=//input[contains(@id,"addsignform-contractnumber")]  ${contract_num}
-
 Завантажити угоду до тендера
     [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${filepath}
     [Documentation]
@@ -1587,10 +1582,25 @@ wait with reload
     Click Button           xpath=//button[contains(@id,'submit_add_contract_form')]
     Wait Until Page Contains  Збережено документи договору аукціону  15
 
+Встановити дату підписання угоди
+    [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${fieldvalue}
+    [Documentation]
+    ...  [Призначення] Встановлює в договорі під номером contract_num аукціону tender_uaid дату підписання контракту зі значенням fieldvalue.
+    etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
+    Sleep  10
+    Click Element     id=signed_contract_btn
+    Wait Until Element Is Visible  id=addsignform-datesigned  30
+    ${fieldvalue}=  etc_convertdate  ${fieldvalue}
+    Input Text  xpath=//input[contains(@id,"addsignform-datesigned")]  ${fieldvalue}
+    Capture Page Screenshot
+    Click Button     id=submit_sign_contract
+    Wait Until Page Contains  Договір підписано успішно  10
+
 Підтвердити підписання контракту
     [Documentation]
     ...      [Arguments] Username, tender uaid, contract number
     ...      [Return] Nothing
     [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
-    Click Button     id=submit_sign_contract
-    Wait Until Page Contains  Договір підписано успішно  10
+    ### Операція зміни статусу та завантаження виконується в одну дію в попередньому кейворді
+    No Operation
