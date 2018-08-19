@@ -1526,7 +1526,7 @@ wait with reload
     Wait Until Page Contains  Оплачено, очікується підписання договору  15
 
 Завантажити протокол дискваліфікації в авард
-    [Arguments]  ${username}   ${filepath}   ${tender_uaid}   ${award_index}
+    [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
     [Documentation]
     ...  [Призначення] Завантажує протокол дискваліфікації, який знаходиться по шляху filepath і має documentType = act/rejectionProtocol, до ставки кандидата на кваліфікацію аукціону tender_uaid користувачем username. Ставка, до якої потрібно додавати протокол визначається за award_index.
     ...  [Повертає] reply (словник з інформацією про документ).
@@ -1558,8 +1558,9 @@ wait with reload
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Wait Until Element Is Visible  id=contract_rejectionProtocol_upload  30
     Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
+    sleep  2
     Click Element           id=contract_rejectionProtocol_upload
-    Sleep   2
+    Sleep  2
     Choose File            xpath=//input[contains(@id, 'contract_rejectionProtocol_upload_field')]   ${filepath}
     Click Button           xpath=//button[contains(@id,'contract_rejectionProtocol_upload_submit')]
     Wait Until Page Contains  Рішення про скасування контракту опубліковано  15
