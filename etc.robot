@@ -1507,9 +1507,9 @@ wait with reload
     [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
-    sleep  15
+    sleep  5
     Click Element           id=upload_owner_protocol_and_contract
-    sleep  4
+    sleep  5
     Choose File             xpath=//input[contains(@id, "award_doc_upload_field_auctionProtocol")]   ${filepath}
     Click Element           id=submit_owner_add_protocol
     Wait Until Page Contains  Протокол завантажено успішно  15
@@ -1531,10 +1531,11 @@ wait with reload
     ...  [Призначення] Завантажує протокол дискваліфікації, який знаходиться по шляху filepath і має documentType = act/rejectionProtocol, до ставки кандидата на кваліфікацію аукціону tender_uaid користувачем username. Ставка, до якої потрібно додавати протокол визначається за award_index.
     ...  [Повертає] reply (словник з інформацією про документ).
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-    Wait Until Element Is Visible  id=rejectionProtocol_upload  30
     Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
+    Wait Until Element Is Visible  id=rejectionProtocol_upload  30
+    Sleep  5
     Click Element           id=rejectionProtocol_upload
-    Sleep   2
+    Sleep  2
     Choose File            xpath=//input[contains(@id, 'rejectionProtocol_upload_field')]   ${filepath}
     Click Button           xpath=//button[contains(@id,'rejectionProtocol_upload_submit')]
     Wait Until Page Contains  Рішення про відмову у затвердженні протоколу опубліковано  15
@@ -1548,6 +1549,7 @@ wait with reload
     [Arguments]  ${username}  ${tender_uaid}  ${award_num}
     etc.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
     Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
+    Sleep  5
     Click Element                         xpath=//a[contains(@id, "refuse_btn")]
     Wait Until Page Contains   Ви успішно відмовились від участі в кваліфікації переможців   10
 
@@ -1558,9 +1560,10 @@ wait with reload
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Wait Until Element Is Visible  id=contract_rejectionProtocol_upload  30
     Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
-    sleep  2
+    sleep  5
+    Capture Page Screenshot
     Click Element           id=contract_rejectionProtocol_upload
-    Sleep  2
+    Sleep  5
     Choose File            xpath=//input[contains(@id, 'contract_rejectionProtocol_upload_field')]   ${filepath}
     Click Button           xpath=//button[contains(@id,'contract_rejectionProtocol_upload_submit')]
     Wait Until Page Contains  Рішення про скасування контракту опубліковано  15
@@ -1589,7 +1592,7 @@ wait with reload
     ...  [Призначення] Встановлює в договорі під номером contract_num аукціону tender_uaid дату підписання контракту зі значенням fieldvalue.
     etc.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Execute Javascript  $('html, body').animate({scrollTop: $("#awards_count").offset().top}, 100);
-    Sleep  10
+    Sleep  5
     Click Element     id=signed_contract_btn
     Wait Until Element Is Visible  id=addsignform-datesigned  30
     ${fieldvalue}=  etc_convertdate  ${fieldvalue}
